@@ -1,0 +1,17 @@
+{
+  "name": "lab6",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.14.0"
+  },
+  "scripts": {
+    "test": "npx playwright test",
+    "test:debug": "npm test -- --debug",
+    "test:chromium": "npm test -- --project=chromium",
+    "show-report": "npx playwright show-report",
+    "codegen": "npx playwright codegen"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}
