@@ -1,77 +1,75 @@
-import { test } from "../base";
-import showsAlertWithText from "../utils/showsAlertWithText";
-
-const { USER_EMAIL, USER_USERNAME, USER_PASSWORD } = process.env;
+import { test, expect } from "../base";
 
 test.describe("e2e tests suite", () => {
   test("should login correctly", async ({ homePage }) => {
     await homePage.visit();
-    await homePage.login(USER_USERNAME, USER_PASSWORD);
+    await homePage.login(process.env.USER_USERNAME, process.env.USER_PASSWORD);
     await homePage.isLoggedIn();
   });
 
-  test.describe(() => {
-    test.beforeEach(async ({ homePage }) => {
-      await homePage.visit();
-      await homePage.login(USER_USERNAME, USER_PASSWORD);
+  test("should logout correctly", async ({ homePage }) => {
+    await homePage.visit();
+    await homePage.login(process.env.USER_USERNAME, process.env.USER_PASSWORD);
+    await homePage.isLoggedIn();
+
+    await homePage.logout();
+    await homePage.isLoggedOut();
+  });
+
+  test("should send contact message correctly", async ({ homePage }) => {
+    await homePage.visit();
+    await homePage.clickNavbarLink("Contact");
+
+    await homePage.fillContactForm({
+      email: process.env.USER_EMAIL,
+      name: process.env.USER_USERNAME,
+      message: "Thanks for the message!!",
     });
 
-    test("should logout correctly", async ({ homePage }) => {
-      await homePage.logout();
-      await homePage.isLoggedOut();
+    homePage.page.once("dialog", async (dialog) => {
+      expect(dialog.type()).toBe("alert");
+      expect(dialog.message()).toContain("Thanks for the message!!");
+      await dialog.accept();
+    });
+  });
+
+  test("should place an order correctly", async ({
+    homePage,
+    productDetailsPage,
+    cartPage,
+  }) => {
+    await homePage.visit();
+    await homePage.login(process.env.USER_USERNAME, process.env.USER_PASSWORD);
+    await homePage.isLoggedIn();
+
+    await homePage.clickProductName("Iphone 6 32gb");
+    await productDetailsPage.isProductTitleVisible();
+    await productDetailsPage.addToCart();
+
+    await homePage.clickNavbarLink("Home");
+
+    await homePage.clickProductName("Samsung galaxy s6");
+    await productDetailsPage.isProductTitleVisible();
+    await productDetailsPage.addToCart();
+
+    await homePage.clickNavbarLink("Cart", { exact: true });
+    await cartPage.isCartVisible();
+    await cartPage.isProductInCart("Iphone 6 32gb");
+    await cartPage.isProductInCart("Samsung galaxy s6");
+
+    await cartPage.clickPlaceOrderbutton();
+    await cartPage.isPlaceOrderFormVisible();
+
+    await cartPage.fillPlaceOrderForm({
+      name: process.env.USER_USERNAME,
+      country: "Test country",
+      city: "Test city",
+      creditCard: process.env.USER_CREDIT_CARD,
+      month: "january",
+      year: "2025",
     });
 
-    test("should send contact message correctly", async ({ homePage }) => {
-      await homePage.clickNavbarLink("Contact");
-
-      await homePage.fillContactForm({
-        email: USER_EMAIL,
-        name: USER_USERNAME,
-        message: "Thanks for the message!!",
-      });
-
-      await showsAlertWithText(homePage.page, "Thanks for the message!!");
-    });
-
-    test("should place an order correctly", async ({
-      homePage,
-      productDetailsPage,
-      cartPage,
-    }) => {
-      await homePage.clickProductName("Iphone 6 32gb");
-      await productDetailsPage.isProductTitleVisible();
-      await productDetailsPage.addToCart();
-      await showsAlertWithText(productDetailsPage.page, "Product added");
-
-      await homePage.visit();
-      await homePage.isProductListVisible();
-
-      await homePage.clickProductName("Samsung galaxy s6");
-      await productDetailsPage.isProductTitleVisible();
-      await productDetailsPage.addToCart();
-      await showsAlertWithText(productDetailsPage.page, "Product added");
-
-      await homePage.visit();
-      await homePage.isProductListVisible();
-
-      await homePage.clickNavbarLink("Cart");
-      await cartPage.isProductInCart("Iphone 6 32gb");
-      await cartPage.isProductInCart("Samsung galaxy s6");
-
-      await cartPage.clickPlaceOrderbutton();
-      await cartPage.isPlaceOrderFormVisible();
-
-      await cartPage.fillPlaceOrderForm({
-        name: USER_USERNAME,
-        country: "Test country",
-        city: "Test city",
-        creditCard: "1234567890123456",
-        month: "january",
-        year: "2025",
-      });
-
-      await cartPage.finalizeOrder();
-      await cartPage.isOrderCreatedSuccessfully();
-    });
+    await cartPage.finalizeOrder();
+    await cartPage.isOrderCreatedSuccessfully();
   });
 });

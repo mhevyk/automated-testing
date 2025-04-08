@@ -3,26 +3,29 @@ import { expect } from "../base";
 export default class CartPage {
   constructor(page) {
     this.page = page;
-
-    this.$cartTable = ".table";
+    this.$cartTableBody = "#tbodyid";
   }
 
-  async visit() {
-    await this.page.goto("https://demoblaze.com/cart.html");
+  isCartVisible() {
+    return expect(
+      this.page.getByRole("heading", { name: "Total" })
+    ).toBeVisible();
   }
 
-  async isProductInCart(productName) {
-    await expect(this.page.locator(this.$cartTable)).toContainText(productName);
+  isProductInCart(productName) {
+    return expect(
+      this.page.getByRole("cell", { name: productName })
+    ).toBeVisible();
   }
 
-  async isPlaceOrderFormVisible() {
-    await expect(
+  isPlaceOrderFormVisible() {
+    return expect(
       this.page.getByRole("button", { name: "Place Order" })
     ).toBeVisible();
   }
 
-  async clickPlaceOrderbutton() {
-    await this.page.getByRole("button", { name: "Place Order" }).click();
+  clickPlaceOrderbutton() {
+    return this.page.getByRole("button", { name: "Place Order" }).click();
   }
 
   async fillPlaceOrderForm({ name, country, city, creditCard, month, year }) {
@@ -38,8 +41,8 @@ export default class CartPage {
     await this.page.getByRole("textbox", { name: "Year:" }).fill(year);
   }
 
-  async finalizeOrder() {
-    await this.page.getByRole("button", { name: "Purchase" }).click();
+  finalizeOrder() {
+    return this.page.getByRole("button", { name: "Purchase" }).click();
   }
 
   async isOrderCreatedSuccessfully() {

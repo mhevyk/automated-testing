@@ -3,19 +3,17 @@ import { expect } from "../base";
 export default class HomePage {
   constructor(page) {
     this.page = page;
-
     this.$loginLink = "#login2";
     this.$loginUsername = "#loginusername";
     this.$loginPassword = "#loginpassword";
     this.$loginButton = '//button[normalize-space(text()) = "Log in"]';
     this.$logoutLink = "#logout2";
     this.$productList = "#tbodyid";
-
     this.$contactEmail = "#recipient-email";
   }
 
-  async visit() {
-    await this.page.goto("https://demoblaze.com/");
+  visit() {
+    return this.page.goto("https://demoblaze.com/");
   }
 
   async login(username, password) {
@@ -25,24 +23,26 @@ export default class HomePage {
     await this.page.click(this.$loginButton);
   }
 
-  async isLoggedIn() {
-    await expect(this.page.locator(this.$logoutLink)).toBeVisible();
+  isLoggedIn() {
+    return expect(
+      this.page.getByRole("link", { name: "Log out" })
+    ).toBeVisible();
   }
 
-  async logout() {
-    await this.page.click(this.$logoutLink);
+  logout() {
+    return this.page.click(this.$logoutLink);
   }
 
-  async isLoggedOut() {
-    await expect(this.page.locator(this.$loginLink)).toBeVisible();
+  isLoggedOut() {
+    return expect(this.page.locator(this.$loginLink)).toBeVisible();
   }
 
-  async clickNavbarLink(linkText) {
-    await this.page.getByRole("link", { name: linkText }).click();
+  clickNavbarLink(linkText, options = {}) {
+    return this.page.getByRole("link", { name: linkText, ...options }).click();
   }
 
-  async isProductListVisible() {
-    await expect(this.page.locator(this.$productList)).toBeVisible();
+  isProductListVisible() {
+    return expect(this.page.locator(this.$productList)).toBeVisible();
   }
 
   async fillContactForm({ email, name, message }) {
@@ -55,7 +55,7 @@ export default class HomePage {
     await this.page.getByRole("textbox", { name: "Message:" }).fill(message);
   }
 
-  async clickProductName(productName) {
-    await this.page.getByRole("link", { name: productName }).click();
+  clickProductName(productName) {
+    return this.page.getByRole("link", { name: productName }).click();
   }
 }

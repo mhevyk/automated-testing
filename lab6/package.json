@@ -6,9 +6,6 @@
   },
   "scripts": {
     "test": "npx playwright test",
-    "test:debug": "npm test -- --debug",
-    "test:chromium": "npm test -- --project=chromium",
-    "show-report": "npx playwright show-report",
     "codegen": "npx playwright codegen"
   },
   "dependencies": {
