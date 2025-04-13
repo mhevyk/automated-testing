@@ -1,5 +1,5 @@
 import { test } from "@/base";
-import { assersScreenshotOfElement } from "../../utils/screenshots";
+import { assersScreenshotOfElement } from "@/utils/screenshots";
 
 test.describe("UI tests", () => {
   test.beforeEach(async ({ homePage }) => {
