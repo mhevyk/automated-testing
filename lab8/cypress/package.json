@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "npx cypress run",
+    "test:headed": "npx cypress open"
+  },
+  "devDependencies": {
+    "cypress": "^14.3.0"
+  }
+}
